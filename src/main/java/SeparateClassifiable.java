@@ -20,9 +20,9 @@ import java.net.URI;
 import java.util.HashSet;
 
 
-public class SeparateUnclassifiable {
+public class SeparateClassifiable {
 
-    public static class SeparateUnknownsMapper extends Mapper<LongWritable, Text, Text, Text> {
+    public static class SeparateKnownMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         private static HashSet<String> professions = new HashSet();
 
@@ -64,8 +64,8 @@ public class SeparateUnclassifiable {
             String[] parsedLine = input.toString().split("\t");
             String personName = parsedLine[0].trim().toLowerCase();
             //UnClassifiable
-            if(!professions.contains(personName)) {
-              context.write(new Text(personName), new Text(parsedLine[1]));
+            if(professions.contains(personName)) {
+                context.write(new Text(personName), new Text(parsedLine[1]));
             }
         }
     }
@@ -82,11 +82,11 @@ public class SeparateUnclassifiable {
         //Add the file into the cache for the mapper to read
         DistributedCache.addCacheFile(professions.toUri(), conf);
 
-        Job job = Job.getInstance(conf, "SeparateUnclassifiable");
+        Job job = Job.getInstance(conf, "SeparateClassifiable");
 
-        job.setJarByClass(SeparateUnclassifiable.class);
+        job.setJarByClass(SeparateClassifiable.class);
 
-        job.setMapperClass(SeparateUnknownsMapper.class);
+        job.setMapperClass(SeparateKnownMapper.class);
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);

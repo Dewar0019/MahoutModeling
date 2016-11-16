@@ -1,8 +1,6 @@
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -10,6 +8,8 @@ import org.apache.hadoop.mapreduce.filecache.DistributedCache;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.mahout.math.RandomAccessSparseVector;
 import org.apache.mahout.math.Vector;
@@ -21,25 +21,26 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 
 public class CreateVector {
 
     public static class VectorCreatorMapper extends Mapper<LongWritable, Text, Text, VectorWritable> {
 
-        private static HashMap<String, List<String>> professions = new HashMap<>();
-        private static HashSet<String> dictionary = new HashSet<>();
+        private static HashMap<String, List<String>> professions = new HashMap<String, List<String>>();
+        private static HashSet<String> dictionary = new HashSet<String>();
         private VectorWritable vectorWritable = new VectorWritable();
-        private SequenceFile.Writer writer;
 
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
             Configuration conf = context.getConfiguration();
-//            FileSystem fs = FileSystem.getLocal(conf);
-//            writer = SequenceFile.createWriter(fs,conf, new Path("finalFile"), Text.class, VectorWritable.class);
+
 
             URI[] cacheFiles = DistributedCache.getCacheFiles(conf);
             URI professionsFile = null;
@@ -84,7 +85,11 @@ public class CreateVector {
             while(reader.ready()) {
                 line = reader.readLine();
                 String[] splitProfessions = line.split(":");
-                professions.put(splitProfessions[0].trim().toLowerCase(), Arrays.asList(splitProfessions[1].trim().toLowerCase().split(",")));
+                List<String> jobs = new ArrayList<String>();
+                for(String job : splitProfessions[1].split(",")) {
+                    jobs.add(job);
+                }
+                professions.put(splitProfessions[0].trim().toLowerCase(), jobs);
             }
             reader.close();
         }
@@ -95,7 +100,7 @@ public class CreateVector {
          * @return
          */
         private HashMap<String, Double> getWordHashMap(String[] wordFrequency) {
-            HashMap<String, Double> map = new HashMap<>();
+            HashMap<String, Double> map = new HashMap<String, Double>();
             for (int i = 0; i < wordFrequency.length; i++) {
                 String[] parsedWord = wordFrequency[i].split(" ");
                 map.put(parsedWord[0].toLowerCase().trim(), processNumeric(parsedWord[1]));
@@ -130,7 +135,7 @@ public class CreateVector {
             String personName = parsedLine[0].trim().toLowerCase();
             String[] wordFrequency = parsedLine[1].replaceAll("[<>,]", " ").split("   ");
             HashMap<String, Double> wordFrequencyMap = getWordHashMap(wordFrequency);
-            List<MahoutVector> vectors = new ArrayList<>();
+            List<MahoutVector> vectors = new ArrayList<MahoutVector>();
             //Classifiable
             if(professions.containsKey(personName)) {
                 List<String> professionVectors = professions.get(personName);
@@ -143,7 +148,7 @@ public class CreateVector {
                         if (wordFrequencyMap.containsKey(word)) {
                             vector.set(index, wordFrequencyMap.get(word));
                         } else {
-                            vector.set(index, Double.NaN);
+                            vector.set(index, 0.0);
                         }
                         index++;
                     }
@@ -167,7 +172,6 @@ public class CreateVector {
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
         Path professions = new Path(otherArgs[0]);
-
         Path dictionaryPath = new Path(otherArgs[1]);
         Path inputPath = new Path(otherArgs[2]);
         Path outputPath = new Path(otherArgs[3]);
@@ -191,6 +195,7 @@ public class CreateVector {
         job.setOutputValueClass(VectorWritable.class);
 
         job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(SequenceFileOutputFormat.class);
 
         FileInputFormat.addInputPath(job, inputPath);
         FileOutputFormat.setOutputPath(job, outputPath);

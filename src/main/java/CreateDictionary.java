@@ -19,7 +19,7 @@ public class CreateDictionary {
     public static class DictionaryCreatorMapper extends Mapper<LongWritable, Text, Text, Text> {
         private final int MAX_DICTIONARY_SIZE = 150000;
         private int counter = 0;
-        private static HashSet<String> dictionary = new HashSet<>();
+        private static HashSet<String> dictionary = new HashSet();
         private Text output = new Text();
 
         @Override

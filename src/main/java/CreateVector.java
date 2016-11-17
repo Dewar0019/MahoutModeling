@@ -102,8 +102,9 @@ public class CreateVector {
         private HashMap<String, Double> getWordHashMap(String[] wordFrequency) {
             HashMap<String, Double> map = new HashMap<String, Double>();
             for (int i = 0; i < wordFrequency.length; i++) {
-                String[] parsedWord = wordFrequency[i].split(" ");
-                map.put(parsedWord[0].toLowerCase().trim(), processNumeric(parsedWord[1]));
+                String toParse = wordFrequency[i].trim();
+                String word = toParse.substring(0, toParse.lastIndexOf(" ")).trim();
+                map.put(word, processNumeric(toParse.substring(toParse.lastIndexOf(" ")).trim()));
             }
             return map;
         }
@@ -118,7 +119,7 @@ public class CreateVector {
 
                 }
             }
-            return d;
+            return Math.abs(d);
         }
 
         private static boolean isNumeric(String str)
@@ -136,7 +137,6 @@ public class CreateVector {
             String[] wordFrequency = parsedLine[1].replaceAll("[<>,]", " ").split("   ");
             HashMap<String, Double> wordFrequencyMap = getWordHashMap(wordFrequency);
             List<MahoutVector> vectors = new ArrayList<MahoutVector>();
-            //Classifiable
             if(professions.containsKey(personName)) {
                 List<String> professionVectors = professions.get(personName);
                 for (String job : professionVectors) {
@@ -176,10 +176,6 @@ public class CreateVector {
         Path inputPath = new Path(otherArgs[2]);
         Path outputPath = new Path(otherArgs[3]);
 
-
-        //Grab the resource files
-//        ClassLoader cl = CreateVector.class.getClassLoader();
-//        String professionFilePath = cl.getResource("profession.txt").getFile();
 
         //Add the file into the cache for the mapper to read
         DistributedCache.addCacheFile(professions.toUri(), conf);

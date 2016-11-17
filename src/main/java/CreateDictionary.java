@@ -17,8 +17,7 @@ public class CreateDictionary {
 
 
     public static class DictionaryCreatorMapper extends Mapper<LongWritable, Text, Text, Text> {
-        private final int MAX_DICTIONARY_SIZE = 150000;
-        private int counter = 0;
+
         private static HashSet<String> dictionary = new HashSet();
         private Text output = new Text();
 
@@ -29,16 +28,15 @@ public class CreateDictionary {
             StringBuilder writeDictionary = new StringBuilder();
             output.set("");
             for (int i = 0; i < wordFrequency.length; i++) {
-                String[] parsedWordFreq = wordFrequency[i].trim().split(" ");
-                String word = parsedWordFreq[0].trim().toLowerCase();
-                if(MAX_DICTIONARY_SIZE > counter && !dictionary.contains(word) && !word.matches(".*\\d+.*") && !word.matches(".*\\W+.*") && word.length() > 3) {
+                String toParse = wordFrequency[i].trim();
+                String word = toParse.substring(0, toParse.lastIndexOf(" ")).trim();
+                if(!dictionary.contains(word) && !word.matches(".*\\d+.*") && !word.matches(".*\\W+.*") && word.length() > 3) {
                     writeDictionary.append(word).append("\n");
                     dictionary.add(word);
-                    counter++;
                 }
             }
             output.set(writeDictionary.toString().trim());
-            if(MAX_DICTIONARY_SIZE > counter && output.toString().length() > 3) {
+            if(output.toString().length() > 3) {
                 context.write(output, new Text(""));
             }
         }

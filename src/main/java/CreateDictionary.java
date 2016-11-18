@@ -48,7 +48,6 @@ public class CreateDictionary {
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
-
         Path inputPath = new Path(otherArgs[0]);
         Path outputPath = new Path(otherArgs[1]);
 

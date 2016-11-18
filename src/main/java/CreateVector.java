@@ -9,7 +9,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.mahout.math.RandomAccessSparseVector;
 import org.apache.mahout.math.Vector;
@@ -26,7 +25,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-
+/**
+ *
+ */
 public class CreateVector {
 
     public static class VectorCreatorMapper extends Mapper<LongWritable, Text, Text, VectorWritable> {
@@ -67,6 +68,11 @@ public class CreateVector {
         }
 
 
+        /**
+         * Create hashmap of dictionary
+         * @param dictionaryFile
+         * @throws IOException
+         */
         private static void createDictionary(String dictionaryFile) throws IOException {
             BufferedReader reader = new BufferedReader(new FileReader(dictionaryFile));
             String line;
@@ -79,6 +85,11 @@ public class CreateVector {
             reader.close();
         }
 
+        /**
+         * Process names from professions.txt
+         * @param professionsFile
+         * @throws IOException
+         */
         private static void processNames(String professionsFile) throws IOException {
             BufferedReader reader = new BufferedReader(new FileReader(professionsFile));
             String line;
@@ -95,7 +106,7 @@ public class CreateVector {
         }
 
         /**
-         *
+         * Create a hashmap of word frequencies
          * @param wordFrequency
          * @return
          */
@@ -109,19 +120,29 @@ public class CreateVector {
             return map;
         }
 
+        /**
+         * Format word frequencies in numbers
+         * @param data
+         * @return
+         */
         private double processNumeric(String data) {
             Double d = Double.NaN;
-            if (isNumeric(data))
-            {
+            if (isNumeric(data)) {
                 try {
                     d = Double.parseDouble(data);
                 }catch(NumberFormatException e) {
 
                 }
             }
+            //Ensure values are positive
             return Math.abs(d);
         }
 
+        /**
+         * Check if given string is a number and if not, grab the number in the string
+         * @param str
+         * @return
+         */
         private static boolean isNumeric(String str)
         {
             NumberFormat formatter = NumberFormat.getInstance();
@@ -170,6 +191,9 @@ public class CreateVector {
 
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
+        if(args.length < 4) {
+            throw new IllegalArgumentException("wrong inputs, example: professions.txt dictionary.txt inputpath outputpath");
+        }
 
         Path professions = new Path(otherArgs[0]);
         Path dictionaryPath = new Path(otherArgs[1]);

@@ -9,20 +9,7 @@ public class DictionaryCutter {
         BufferedWriter writer = new BufferedWriter(new FileWriter("dictionaryMod.txt"));
         int counter = 0;
         try {
-//                BufferedReader reader = new BufferedReader(new FileReader("/Users/dewartan/Desktop/profession.txt"));
-//                String line;
-//                while(reader.ready()) {
-//                    line = reader.readLine();
-//                    String[] splitProfessions = line.split(":");
-//                    List<String> jobs = new ArrayList<String>();
-//                    for(String job : splitProfessions[1].split(",")) {
-//                        jobs.add(job);
-//                    }
-//                    writer.write(splitProfessions[0].trim().toLowerCase() + " " + jobs.toString() + "\n");
-//                }
-//                reader.close();
-
-            BufferedReader file = new BufferedReader(new FileReader("/Users/dewartan/Desktop/dictionary.txt"));
+            BufferedReader file = new BufferedReader(new FileReader(args[0]));
             String line;
             while(file.ready()) {
                 line = file.readLine();

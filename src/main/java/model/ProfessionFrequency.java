@@ -1,5 +1,9 @@
+package model;
+
 /**
- * Created by dewartan on 11/18/16.
+ * Hadoop Group 15
+ *
+ * Allows sorting for retrieving the three most likely professions of the unclassifiables
  */
 public class ProfessionFrequency implements Comparable {
     public String job;

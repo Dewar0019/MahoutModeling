@@ -1,3 +1,4 @@
+import model.MahoutVector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -26,7 +27,9 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
+ * Hadoop Group 15
  *
+ * Creates the mahout vectors using the articles found in classifiable people
  */
 public class CreateVector {
 
@@ -62,7 +65,9 @@ public class CreateVector {
                     }
                 }
 
+                //Creates profession hashmap
                 processNames(professionsFile.toString());
+                //Creates dictionary hashmap
                 createDictionary(dictionaryFile.toString());
             }
         }

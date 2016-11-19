@@ -19,7 +19,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 
-
+/**
+ * Hadoop Group 15
+ *
+ * Separates the classifiables from profession.txt
+ */
 public class SeparateClassifiable {
 
     public static class SeparateKnownMapper extends Mapper<LongWritable, Text, Text, Text> {

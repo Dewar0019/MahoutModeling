@@ -12,7 +12,11 @@ import org.apache.hadoop.util.GenericOptionsParser;
 import java.io.IOException;
 import java.util.HashSet;
 
-
+/**
+ * Hadoop Group 15
+ *
+ * Creates a dictionary of all the word frequencies found
+ */
 public class CreateDictionary {
 
 

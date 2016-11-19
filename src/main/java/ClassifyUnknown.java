@@ -1,3 +1,4 @@
+import model.ProfessionFrequency;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -8,7 +9,7 @@ import org.apache.hadoop.mapreduce.filecache.DistributedCache;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-=import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import java.io.BufferedReader;
@@ -18,7 +19,9 @@ import java.net.URI;
 import java.util.*;
 
 /**
+ * Hadoop Group 15
  *
+ * Classify the Unknown with their professions for mahout
  */
 public class ClassifyUnknown {
 
@@ -43,7 +46,6 @@ public class ClassifyUnknown {
                         break;
                     }
                 }
-
                 processNames(professionsFile.toString());
             }
         }
@@ -51,7 +53,6 @@ public class ClassifyUnknown {
 
         /**
          * Process names from professions.txt
-         *
          * @param professionsFile
          * @throws IOException
          */
@@ -70,7 +71,6 @@ public class ClassifyUnknown {
 
         /**
          * Create a hashmap of word frequencies
-         *
          * @param wordFrequency
          * @return
          */
@@ -102,12 +102,12 @@ public class ClassifyUnknown {
             StringBuilder builder = new StringBuilder();
             int counter = 0;
             while (counter < 3 && counter < possibleProfessions.size()) {
-                builder.append(possibleProfessions.get(counter).job).append(",");
+                builder.append(possibleProfessions.get(counter).job).append(", ");
                 counter++;
             }
             String finalProfessions = "";
             if (builder.toString().length() > 0) {
-                finalProfessions = builder.toString().substring(0, builder.toString().lastIndexOf(", ")) + "\n" ;
+                finalProfessions = builder.toString().substring(0, builder.toString().lastIndexOf(","));
             }
             context.write(new Text(personName + " : " + finalProfessions), new Text(""));
         }

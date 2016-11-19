@@ -1,6 +1,4 @@
-/**
- * Created by dewartan on 11/15/16.
- */
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -19,7 +17,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 
-
+/**
+ * Hadoop Group 15
+ *
+ * Separates the unclassifiables from profession.txt
+ */
 public class SeparateUnclassifiable {
 
     public static class SeparateUnknownsMapper extends Mapper<LongWritable, Text, Text, Text> {
